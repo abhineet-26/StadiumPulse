@@ -26,6 +26,15 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+import google.generativeai as genai
+
+_API_KEY = os.getenv("GEMINI_API_KEY")
+if _API_KEY:
+    genai.configure(api_key=_API_KEY)
+    _model = genai.GenerativeModel("gemini-1.5-flash")
+else:
+    _model = None
+
 # ─── KB Loading ──────────────────────────────────────────────────────────────
 
 _KB_DIR = Path(__file__).parent / "kb"
@@ -430,26 +439,47 @@ def process_query(
 
     # ── Generate grounded response ─────────────────────────────────────────
     ctype = chunk["type"]
-    if ctype == "gate":
-        text = _fmt_gate_response(chunk, lang, accessibility_mode)
-    elif ctype == "facility":
-        text = _fmt_facility_response(chunk, lang)
-    elif ctype == "seat":
-        text = _fmt_seat_response(chunk, lang, accessibility_mode)
-    elif ctype in ("transit_rail", "transit_bus", "transit_general"):
-        text = _fmt_transit_response(chunk, lang)
-    elif ctype in ("policy", "faq"):
-        text = _fmt_policy_response(chunk, lang)
+    
+    if _model is not None:
+        prompt = f"""You are the StadiumPulse Fan Assistant for MetLife Stadium.
+A fan asked: "{message}"
+Reply language: {lang}
+Accessibility Mode Enabled: {accessibility_mode}
+Classified Intent: {intent}
+Retrieved Knowledge Base Data:
+{json.dumps(chunk, indent=2)}
+
+Instructions:
+1. Answer the fan's question using ONLY the provided Knowledge Base Data.
+2. Be concise, friendly, and format with markdown (e.g., use emojis, bold text).
+3. Do NOT hallucinate directions or policies not in the data.
+4. If accessibility mode is True, heavily emphasize step-free access and elevators from the data.
+"""
+        try:
+            text = _model.generate_content(prompt).text
+        except Exception as e:
+            text = f"⚠️ LLM Error: {str(e)}"
     else:
-        # Shouldn't reach here; treat as unknown
-        return {
-            "text": _FALLBACK[lang],
-            "intent": intent,
-            "confidence": "low",
-            "source": None,
-            "fallback": True,
-            "language": lang,
-        }
+        if ctype == "gate":
+            text = _fmt_gate_response(chunk, lang, accessibility_mode)
+        elif ctype == "facility":
+            text = _fmt_facility_response(chunk, lang)
+        elif ctype == "seat":
+            text = _fmt_seat_response(chunk, lang, accessibility_mode)
+        elif ctype in ("transit_rail", "transit_bus", "transit_general"):
+            text = _fmt_transit_response(chunk, lang)
+        elif ctype in ("policy", "faq"):
+            text = _fmt_policy_response(chunk, lang)
+        else:
+            # Shouldn't reach here; treat as unknown
+            return {
+                "text": _FALLBACK[lang],
+                "intent": intent,
+                "confidence": "low",
+                "source": None,
+                "fallback": True,
+                "language": lang,
+            }
 
     return {
         "text": text,
