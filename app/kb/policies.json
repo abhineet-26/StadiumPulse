@@ -1,0 +1,64 @@
+{
+  "reentry": {
+    "allowed": false,
+    "exception": "Medical emergency only, with staff escort. Your ticket will not re-scan after exit.",
+    "text": "Re-entry is not permitted once you exit MetLife Stadium. Please plan your visits to concession areas before leaving your seat area. For medical emergencies requiring exit and re-entry, speak to a supervisor at the gate.",
+    "keywords": ["re-entry", "reentry", "re entry", "exit", "come back", "return", "re-entrar", "reentrada", "volver a entrar", "sair e voltar"]
+  },
+  "bags": {
+    "max_size": "12\" x 6\" x 12\"",
+    "clear_required": true,
+    "text": "Clear bags only, maximum 12x6x12 inches. One small clutch purse (4.5x6.5 inches) is also permitted. No backpacks. Checked bag storage available at Gate A Fan Services Booth.",
+    "keywords": ["bag", "backpack", "purse", "luggage", "bag policy", "what can i bring", "bolsa", "mochila", "bolso"]
+  },
+  "prohibited_items": {
+    "items": ["Backpacks", "Outside food or drink", "Large umbrellas", "Selfie sticks", "Laser pointers", "Noisemakers and air horns", "Weapons of any kind", "Drones", "Professional cameras with detachable lenses over 6 inches"],
+    "text": "Prohibited items include: backpacks, outside food/drink, large umbrellas, selfie sticks, laser pointers, air horns, any weapons, and drones. Full list available at stadium entrances.",
+    "keywords": ["prohibited", "banned", "not allowed", "can i bring", "camera", "food", "drink", "alcohol", "proibido", "prohibido"]
+  },
+  "medical": {
+    "text": "If you witness or experience a medical emergency: alert the nearest staff member immediately, or go to the nearest First Aid station at Gate A (Room NA-1) or Gate C (Station EC-1). AED defibrillators are at Sections 101, 108, and 118. For emergencies: call 911 or the stadium line 1-800-STADIUM.",
+    "stations": ["Gate A – First Aid Room NA-1", "Gate C – Station EC-1", "Gate E – Station SE-1"],
+    "aed_locations": ["Section 101", "Section 108", "Section 118"],
+    "keywords": ["medical", "first aid", "emergency", "hurt", "injured", "unconscious", "faint", "sick", "ambulance", "aed", "defibrillator", "emergência", "emergencia", "primeiros socorros", "primeros auxilios"]
+  },
+  "lost_child": {
+    "code": "Code Adam",
+    "text": "If you have lost a child or found an unaccompanied child: immediately tell the nearest staff member and say 'Code Adam'. Fan Services Booth FS-1 (Gate A) coordinates all lost child responses. Security will make a PA announcement within 2 minutes. Do not leave the child alone.",
+    "keywords": ["lost child", "missing child", "child lost", "lost kid", "unaccompanied child", "criança perdida", "niño perdido", "lost son", "lost daughter"]
+  },
+  "lost_property": {
+    "text": "Report lost property to Fan Services Booths at Gate A (FS-1) or East Concourse (FS-2). Found items are logged and held for 30 days. Contact: lostandfound@metlifeevents.com",
+    "keywords": ["lost", "found", "lost item", "lost phone", "lost wallet", "missing item", "perdido", "objeto perdido"]
+  },
+  "smoking": {
+    "text": "Smoking and vaping are not permitted inside the stadium. Designated smoking area is outside Gate F on the south-west exterior.",
+    "keywords": ["smoking", "smoke", "vape", "cigarette", "fumar", "cigarrillo"]
+  },
+  "wifi": {
+    "text": "Free WiFi is available throughout MetLife Stadium. Network: MetLife-Event-Guest — no password required.",
+    "keywords": ["wifi", "wi-fi", "internet", "network", "connect", "phone", "signal", "wifi password", "senha wifi", "contraseña wifi"]
+  },
+  "faqs": [
+    {
+      "question": "What time do gates open?",
+      "answer": "Gates open 2.5 hours before kickoff — today at 17:30 ET.",
+      "keywords": ["gates open", "opening time", "when open", "what time", "horário", "horario", "abre"]
+    },
+    {
+      "question": "Where is the team merchandise store?",
+      "answer": "The official FIFA merchandise shop is at East Plaza (before Gate C) and on Level 2 of the North concourse.",
+      "keywords": ["store", "shop", "merchandise", "jersey", "shirt", "souvenir", "loja", "tienda"]
+    },
+    {
+      "question": "Are there ATMs inside?",
+      "answer": "Yes. ATMs are located at the Gate A concourse, East concourse (near Gate C), and South concourse (near Gate E).",
+      "keywords": ["atm", "cash", "money", "withdraw", "bank", "caixa", "cajero"]
+    },
+    {
+      "question": "Is food available inside?",
+      "answer": "Yes. Concession stands are on all concourses. Vegetarian, vegan, and halal options are available. No outside food or drink is permitted (medical exceptions available at Fan Services).",
+      "keywords": ["food", "eat", "concession", "restaurant", "vegan", "vegetarian", "halal", "comida", "comer", "alimentos"]
+    }
+  ]
+}

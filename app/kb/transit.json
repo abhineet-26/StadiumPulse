@@ -1,0 +1,51 @@
+{
+  "metro": [
+    {
+      "line": "NJ Transit — Meadowlands Rail",
+      "nearest_stop": "Meadowlands Station",
+      "walk_to_gate_a_min": 8,
+      "direction": "From Penn Station, NYC",
+      "schedule": "Trains depart Penn Station every 15 min. Next departures: 17:32, 17:47, 18:02, 18:17. Direct to Meadowlands Station — no transfers.",
+      "platform": "Platform 1, Penn Station NJ Transit lower level",
+      "fare": "Standard NJ Transit fare applies. Tap-to-pay accepted.",
+      "keywords": ["train", "rail", "nj transit", "metro", "penn station", "meadowlands", "railway", "trem", "tren", "ferroviário"]
+    }
+  ],
+  "buses": [
+    {
+      "line": "NJ Transit Bus 353",
+      "nearest_stop": "MetLife Stadium Stop",
+      "walk_to_gate_a_min": 3,
+      "direction": "From Port Authority Bus Terminal, NYC",
+      "schedule": "Buses depart Port Authority every 10 min from 15:00–19:30. Next: 17:25, 17:35, 17:45, 17:55. Return buses run until 2 hours post-match.",
+      "platform": "Bay 12, Port Authority Bus Terminal",
+      "fare": "Standard NJ Transit fare. Cash and MetroCard accepted.",
+      "keywords": ["bus", "buses", "port authority", "bus 353", "ônibus", "autobús", "coach"]
+    }
+  ],
+  "rideshare": {
+    "dropoff": "Rideshare Drop-off Zone, East Plaza (Lot B entrance). Follow green signage from Rt-3.",
+    "walk_to_gate_c_min": 5,
+    "pickup_post_match": "East Plaza designated rideshare pickup zone. Expect 30–45 min wait after final whistle.",
+    "apps": ["Uber", "Lyft"],
+    "keywords": ["uber", "lyft", "rideshare", "taxi", "ride share", "pickup", "drop off", "car"]
+  },
+  "parking": [
+    {
+      "lot": "Lot A (North)", "nearest_gate": "A", "walk_min": 5,
+      "capacity": 2000, "notes": "Pre-purchased passes only. No walk-up. Card payment only."
+    },
+    {
+      "lot": "Lot B (East)", "nearest_gate": "C", "walk_min": 8,
+      "capacity": 3000, "notes": "Walk-up available. Card payment only. Accessible spots near east entrance."
+    },
+    {
+      "lot": "Lot C (South)", "nearest_gate": "E", "walk_min": 6,
+      "capacity": 2500, "notes": "Pre-purchased preferred. Limited walk-up spaces."
+    }
+  ],
+  "general": {
+    "text": "MetLife Stadium is accessible by NJ Transit rail (Meadowlands Station, 8-min walk to Gate A) and NJ Transit Bus 353 (direct from Port Authority, stops 3 min from Gate A). Rideshare pickup/dropoff at East Plaza. Parking available in Lots A, B, and C — pre-purchased passes recommended.",
+    "keywords": ["transit", "transport", "how to get", "directions", "getting here", "parking", "metro", "train", "bus", "como chegar", "cómo llegar", "transporte"]
+  }
+}

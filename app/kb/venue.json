@@ -1,0 +1,120 @@
+{
+  "venue": {
+    "name": "MetLife Stadium",
+    "capacity": 82500,
+    "address": "1 MetLife Stadium Dr, East Rutherford, NJ 07073",
+    "event": "FIFA World Cup 2026 — USA vs Portugal",
+    "date": "July 6, 2026",
+    "kickoff_time": "20:00 ET",
+    "wifi": "MetLife-Event-Guest (no password)",
+    "emergency_line": "1-800-STADIUM"
+  },
+  "gates": [
+    {
+      "id": "A", "name": "Gate A", "concourse": "North",
+      "sections": ["101","102","103","130","131"],
+      "accessible": true, "walk_from_main_min": 3, "status": "open",
+      "directions": "From the main plaza, head north along the outer ring road. Gate A is on the north side with blue signage. Elevator access on the left.",
+      "accessible_route": "Use the paved accessible path to the left of the main entrance. Blue ramp markers lead to Gate A accessible entry. Elevator EB-1 immediately inside.",
+      "keywords": ["gate a", "north", "gate a directions", "101", "102", "103", "130", "131", "north entrance", "north gate"]
+    },
+    {
+      "id": "B", "name": "Gate B", "concourse": "North-East",
+      "sections": ["104","105","106","107","127","128","129"],
+      "accessible": true, "walk_from_main_min": 5, "status": "open",
+      "directions": "Walk east from the main plaza past the Team Store. Gate B is at the end of the northeast walkway.",
+      "accessible_route": "Accessible path via the northeast ramp. Elevator EB-2 is 30m past Gate B turnstiles.",
+      "keywords": ["gate b", "north east", "northeast", "104", "105", "106", "107", "127", "128", "129"]
+    },
+    {
+      "id": "C", "name": "Gate C", "concourse": "East",
+      "sections": ["108","109","110","111","112","124","125","126"],
+      "accessible": true, "walk_from_main_min": 7, "status": "open",
+      "directions": "Head east from the main plaza, cross the pedestrian bridge. Gate C is on your right — follow yellow wayfinding markers.",
+      "accessible_route": "Step-free access via the east accessible corridor. Ramp entrance 40m before the main turnstiles, marked with blue wheelchair signs. Elevator EB-3 inside.",
+      "keywords": ["gate c", "east", "east gate", "108", "109", "110", "111", "112", "124", "125", "126", "portão c", "puerta c"]
+    },
+    {
+      "id": "D", "name": "Gate D", "concourse": "South-East",
+      "sections": ["113","114","115","116","117"],
+      "accessible": false, "walk_from_main_min": 9, "status": "open",
+      "directions": "Continue southeast from Gate C past the F&B village. Gate D is at the southeastern corner.",
+      "accessible_route": "Gate D has no step-free entry. Please use Gate C (7 min) or Gate E (accessible) instead.",
+      "keywords": ["gate d", "southeast", "south east", "113", "114", "115", "116", "117"]
+    },
+    {
+      "id": "E", "name": "Gate E", "concourse": "South",
+      "sections": ["118","119","120","121"],
+      "accessible": true, "walk_from_main_min": 11, "status": "open",
+      "directions": "From the southern parking lots, Gate E is directly ahead. From the main plaza, head south along the outer ring for 10 min.",
+      "accessible_route": "Accessible entry via south ramp. Lift SE-1 immediately past turnstiles.",
+      "keywords": ["gate e", "south", "south gate", "118", "119", "120", "121"]
+    },
+    {
+      "id": "G", "name": "Gate G (Premium)", "concourse": "West",
+      "sections": ["P1","P2","Club Level"],
+      "accessible": true, "walk_from_main_min": 2, "status": "open",
+      "directions": "Gate G is the premium/club entrance directly west of the main plaza. Look for silver signage.",
+      "accessible_route": "Premium accessible lane — no ramp needed. Elevator PL-1 to club level.",
+      "keywords": ["gate g", "west", "premium", "club", "vip", "club level"]
+    }
+  ],
+  "sections": {
+    "C": {
+      "gate": "C", "level": 1, "concourse": "East",
+      "rows": 30, "seats_per_row": 28, "type": "General",
+      "directions": "Enter Gate C, follow East concourse signs to Section C. Rows 1-15 are field-level; rows 16-30 are upper field."
+    },
+    "101": { "gate": "A", "level": 1, "concourse": "North", "type": "General" },
+    "102": { "gate": "A", "level": 1, "concourse": "North", "type": "General" },
+    "108": { "gate": "C", "level": 1, "concourse": "East",  "type": "General" },
+    "109": { "gate": "C", "level": 1, "concourse": "East",  "type": "General" },
+    "110": { "gate": "C", "level": 1, "concourse": "East",  "type": "General" },
+    "201": { "gate": "A", "level": 2, "concourse": "Upper North", "type": "Upper" },
+    "302": { "gate": "B", "level": 3, "concourse": "Upper Deck", "type": "Upper" }
+  },
+  "accessible_facilities": [
+    {
+      "id": "WC-N1", "type": "restroom", "near_gate": "A",
+      "location": "Section 101-102 corridor, left of Gate A concession stand",
+      "step_free": true,
+      "keywords": ["restroom", "toilet", "bathroom", "wc", "banheiro", "aseos", "accessible restroom", "wheelchair restroom"]
+    },
+    {
+      "id": "WC-E1", "type": "restroom", "near_gate": "C",
+      "location": "20m past Gate C turnstiles on the right, East concourse",
+      "step_free": true,
+      "keywords": ["restroom", "toilet", "bathroom", "wc", "east restroom", "gate c restroom"]
+    },
+    {
+      "id": "FA-N1", "type": "first_aid", "near_gate": "A",
+      "location": "First Aid Room NA-1, Section 102 tunnel entrance. Open 24h during event. Paramedics on site.",
+      "step_free": true,
+      "keywords": ["first aid", "medical", "paramedic", "ambulance", "help", "hurt", "injured", "sick", "primeiros socorros", "primeros auxilios"]
+    },
+    {
+      "id": "FA-E1", "type": "first_aid", "near_gate": "C",
+      "location": "First Aid Station EC-1, 30m past Gate C on the left. Paramedics on site.",
+      "step_free": true,
+      "keywords": ["first aid", "medical", "paramedic", "gate c medical"]
+    },
+    {
+      "id": "EL-N1", "type": "elevator", "near_gate": "A",
+      "location": "Elevator bank EB-1, immediately inside Gate A turnstiles, left side. Serves levels 1, 2, 3.",
+      "step_free": true,
+      "keywords": ["elevator", "lift", "elevador", "ascensor", "wheelchair", "level 2", "level 3", "upper level"]
+    },
+    {
+      "id": "EL-E1", "type": "elevator", "near_gate": "C",
+      "location": "Elevator bank EB-3, 50m past Gate C. Serves levels 1, 2, 3.",
+      "step_free": true,
+      "keywords": ["elevator", "lift", "gate c elevator", "east elevator"]
+    },
+    {
+      "id": "LF-1", "type": "lost_found", "near_gate": "A",
+      "location": "Fan Services Booth FS-1, next to Gate A. Open during event hours.",
+      "step_free": true,
+      "keywords": ["lost", "found", "lost and found", "fan services", "lost item", "perdido", "objetos perdidos"]
+    }
+  ]
+}

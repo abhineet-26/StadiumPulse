@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>StadiumPulse — Fan Assistant</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Demo Banner -->
+  <div id="demo-banner">
+    <div class="banner-content">
+      <span class="banner-badge">MVP DEMO</span>
+      This is a single-attempt submission demo. All stadium data is synthetic.
+    </div>
+    <button id="demo-banner-close" aria-label="Dismiss banner">×</button>
+  </div>
+
+  <div class="app-container">
+
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-logo">
+        <div class="logo-icon"></div>
+        <div class="logo-text">StadiumPulse<span class="version">v2.0</span></div>
+      </div>
+      <div class="header-meta">
+        <div class="match-info">
+          <div class="match-title">USA vs POR</div>
+          <div class="match-subtitle">MetLife Stadium</div>
+        </div>
+        <div class="countdown-pill" id="countdown-pill">
+          T-<span id="cd-hours">02</span>:<span id="cd-minutes">30</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="surface active" id="surface-fan">
+      
+      <!-- Top controls: Map toggle, Accessibility, Language -->
+      <div class="fan-controls">
+        <div class="fan-controls-left">
+          <button class="fan-btn map-toggle" id="btn-map" aria-pressed="true">
+            <span class="icon">🗺️</span> Map
+          </button>
+          <button class="fan-btn" id="btn-access" aria-pressed="false" aria-label="Toggle Accessibility Mode">
+            <span class="icon">♿</span> Accessibility
+          </button>
+        </div>
+        <div class="fan-controls-right">
+          <select class="lang-select" id="lang-select" aria-label="Select Language">
+            <option value="en" selected>🇺🇸 English</option>
+            <option value="pt">🇧🇷 Português</option>
+            <option value="es">🇲🇽 Español</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="fan-layout">
+        <!-- Venue Map Panel -->
+        <div class="fan-map-panel" id="map-panel">
+          <div class="map-container">
+            <!-- Synthetic SVG Map placeholder -->
+            <svg class="venue-map" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet">
+              <rect width="100%" height="100%" fill="var(--surface-bg)"/>
+              <ellipse cx="200" cy="150" rx="120" ry="80" fill="none" stroke="var(--border)" stroke-width="2"/>
+              <rect x="150" y="110" width="100" height="80" rx="10" fill="var(--bg)" stroke="var(--border)"/>
+              
+              <!-- Gate markers -->
+              <circle cx="200" cy="50" r="12" fill="var(--surface-high)" stroke="var(--accent)" stroke-width="2"/>
+              <text x="200" y="55" class="map-label">A</text>
+              
+              <circle cx="340" cy="150" r="12" fill="var(--surface-high)" stroke="var(--accent)" stroke-width="2"/>
+              <text x="340" y="155" class="map-label">C</text>
+
+              <circle cx="200" cy="250" r="12" fill="var(--surface-high)" stroke="var(--accent)" stroke-width="2"/>
+              <text x="200" y="255" class="map-label">E</text>
+
+              <circle cx="60" cy="150" r="12" fill="var(--surface-high)" stroke="var(--accent)" stroke-width="2"/>
+              <text x="60" y="155" class="map-label">G</text>
+            </svg>
+            <div class="map-overlay">
+              <div class="map-status">
+                <span class="status-dot"></span> Live venue graph active
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Panel -->
+        <div class="fan-chat-panel">
+          
+          <div class="chat-messages" id="chat-messages" role="log" aria-live="polite">
+            <!-- Welcome message will be injected by JS -->
+          </div>
+
+          <!-- Suggested queries (Chips) -->
+          <div class="chat-chips" id="chat-chips">
+            <button class="chip" data-query="Where is my seat? Section 108">🪑 My seat</button>
+            <button class="chip" data-query="Where is the nearest accessible restroom?">♿ Accessible Restroom</button>
+            <button class="chip" data-query="Next train to Penn Station">🚇 Next train</button>
+            <button class="chip" data-query="Can I bring a backpack in?">🎒 Bag policy</button>
+          </div>
+
+          <!-- Input Area -->
+          <div class="chat-input-area">
+            <form id="chat-form" onsubmit="return false;">
+              <textarea id="chat-input" placeholder="Ask anything... (e.g., 'Where is Gate C?')" rows="1" maxlength="500" aria-label="Chat input"></textarea>
+              <button type="submit" id="btn-send" class="send-btn" aria-label="Send message">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+              </button>
+            </form>
+          </div>
+          <div class="chat-footer">
+            StadiumPulse GenAI is grounded in venue policies. Verify critical instructions with staff.
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Loading indicator template -->
+  <template id="typing-tmpl">
+    <div class="message ai typing-message" id="typing-indicator">
+      <div class="message-bubble typing">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+    </div>
+  </template>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
