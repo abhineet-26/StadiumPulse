@@ -31,7 +31,7 @@ import google.generativeai as genai
 _API_KEY = os.getenv("GEMINI_API_KEY")
 if _API_KEY:
     genai.configure(api_key=_API_KEY)
-    _model = genai.GenerativeModel("gemini-1.5-flash")
+    _model = genai.GenerativeModel("gemini-3.5-flash")
 else:
     _model = None
 
