@@ -25,14 +25,14 @@ import time
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import Depends, FastAPI, Request
+from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from .limiter import check_rate_limit
-from .models import ChatRequest, ChatResponse, HealthResponse, Settings
-from .rag import KnowledgeBase, get_kb, process_query
+from .api import routes
+from .models import Settings
+from .rag import get_kb
 
 # Configure standard logging
 logging.basicConfig(
@@ -100,6 +100,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ─── Global Exception Handler ──────────────────────────────────────────────────
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Global error on {request.url.path}: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": "Internal server error. Please try again later."},
+    )
+
+# ─── Include API Routes ───────────────────────────────────────────────────────
+
+app.include_router(routes.router)
+
 # ─── Static frontend ──────────────────────────────────────────────────────────
 
 _FRONTEND_DIR = Path(__file__).parent.parent / "frontend"
@@ -110,92 +124,7 @@ app.mount(
     name="static",
 )
 
-
 @app.get("/", include_in_schema=False)
 async def serve_index() -> FileResponse:
-    """Serve the Fan Assistant single-page app."""
+    """Serve the single-page app."""
     return FileResponse(str(_FRONTEND_DIR / "index.html"))
-
-
-# ─── Health check ─────────────────────────────────────────────────────────────
-
-@app.get("/api/health", response_model=HealthResponse, tags=["system"])
-@app.get("/health", response_model=HealthResponse, include_in_schema=False)
-async def health() -> HealthResponse:
-    """Liveness + readiness check. Confirms KB is loaded."""
-    kb = get_kb()
-    return HealthResponse(status="ok", kb_loaded=kb.loaded, version="3.0.0")
-
-
-# ─── Chat endpoint ────────────────────────────────────────────────────────────
-
-@app.post(
-    "/api/chat",
-    response_model=ChatResponse,
-    tags=["assistant"],
-    summary="Fan Assistant chat — grounded RAG response",
-    description=(
-        "Accepts a fan's question and returns a grounded response from the venue "
-        "knowledge base. Input is validated and rate-limited. "
-        "When no KB match is found, returns an explicit 'I don't know' fallback "
-        "rather than hallucinating an answer."
-    ),
-)
-async def chat(
-    request: ChatRequest,
-    _: None = Depends(check_rate_limit),
-    kb: KnowledgeBase = Depends(get_kb),
-) -> ChatResponse:
-    """
-    RAG chat endpoint.
-
-    FastAPI's Depends(check_rate_limit) enforces the 20 req/min per-IP limit
-    before any RAG processing begins — malformed or rate-exceeded requests
-    never reach the KB retrieval layer.
-    """
-    result = process_query(
-        message=request.message,
-        language=request.language,
-        accessibility_mode=request.accessibility_mode,
-        kb=kb,
-    )
-    return ChatResponse(**result)
-
-
-@app.get("/api/density", tags=["system"], summary="Get synthetic gate crowd wait times")
-async def get_density() -> dict:
-    """
-    Returns synthetic, smoothly-varying wait times (minutes) for all stadium gates.
-    Values oscillate on 10-minute cycles using time-seeded sinusoids to simulate
-    realistic crowd surge patterns without requiring external data sources.
-    """
-    t = time.time() / 600.0  # Slow-changing seed (10-min cycles)
-    return {
-        "A": max(2, int(15 + 10 * math.sin(t))),
-        "B": max(2, int(8  +  5 * math.sin(t + 1.0))),
-        "C": max(2, int(25 + 15 * math.sin(t + 2.0))),  # Historically busiest
-        "D": max(2, int(5  +  3 * math.sin(t + 3.0))),
-        "E": max(2, int(12 +  6 * math.sin(t + 4.0))),
-        "G": max(1, int(3  +  2 * math.sin(t + 5.0))),  # Accessible gate — always low
-    }
-
-
-@app.get("/api/match", tags=["system"], summary="Get synthetic live match state")
-async def get_match() -> dict:
-    """
-    Returns a synthetic live match state for the FIFA WC 2026 demo.
-    Simulates match progression based on wall-clock time relative to kickoff.
-    """
-    # Synthetic kickoff at a fixed offset from server start
-    elapsed_min = int((time.time() % 5400) / 60)  # 90-min cycle
-    in_play = elapsed_min < 90
-    return {
-        "home_team": "USA",
-        "away_team": "POR",
-        "home_score": min(3, elapsed_min // 30),
-        "away_score": min(2, elapsed_min // 45),
-        "minute": elapsed_min if in_play else 90,
-        "status": "LIVE" if in_play else "FT",
-        "venue": "MetLife Stadium",
-        "capacity": 82500,
-    }
