@@ -461,30 +461,39 @@ Instructions:
 """
         try:
             text = _model.generate_content(prompt).text
-        except Exception as e:
-            logger.error(f"LLM Error generating response: {e}")
-            text = f"⚠️ LLM Error: {str(e)}"
-    else:
-        if ctype == "gate":
-            text = _fmt_gate_response(chunk, lang, accessibility_mode)
-        elif ctype == "facility":
-            text = _fmt_facility_response(chunk, lang)
-        elif ctype == "seat":
-            text = _fmt_seat_response(chunk, lang, accessibility_mode)
-        elif ctype in ("transit_rail", "transit_bus", "transit_general"):
-            text = _fmt_transit_response(chunk, lang)
-        elif ctype in ("policy", "faq"):
-            text = _fmt_policy_response(chunk, lang)
-        else:
-            # Shouldn't reach here; treat as unknown
             return {
-                "text": _FALLBACK[lang],
+                "text": text,
                 "intent": intent,
-                "confidence": "low",
-                "source": None,
-                "fallback": True,
+                "confidence": "high",
+                "source": source_ref,
+                "fallback": False,
                 "language": lang,
             }
+        except Exception as e:
+            logger.error(f"LLM Error generating response: {e}. Falling back to templates.")
+            # Fall through to deterministic template generation below
+            
+    # ── Template generation (used if model is None OR if model fails) ──────
+    if ctype == "gate":
+        text = _fmt_gate_response(chunk, lang, accessibility_mode)
+    elif ctype == "facility":
+        text = _fmt_facility_response(chunk, lang)
+    elif ctype == "seat":
+        text = _fmt_seat_response(chunk, lang, accessibility_mode)
+    elif ctype in ("transit_rail", "transit_bus", "transit_general"):
+        text = _fmt_transit_response(chunk, lang)
+    elif ctype in ("policy", "faq"):
+        text = _fmt_policy_response(chunk, lang)
+    else:
+        # Shouldn't reach here; treat as unknown
+        return {
+            "text": _FALLBACK[lang],
+            "intent": intent,
+            "confidence": "low",
+            "source": None,
+            "fallback": True,
+            "language": lang,
+        }
 
     return {
         "text": text,
