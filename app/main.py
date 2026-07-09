@@ -6,6 +6,8 @@ Routes:
   GET  /health      → alias for /api/health (convenience)
   GET  /api/health  → liveness check + KB status
   POST /api/chat    → RAG pipeline, rate-limited, input-validated
+  GET  /api/density → synthetic gate crowd wait times
+  GET  /api/match   → synthetic live match state
 
 Security practices implemented here:
   - Rate limiting via Depends(check_rate_limit)
@@ -13,10 +15,13 @@ Security practices implemented here:
   - CORS restricted to same-origin in production annotation
   - No secrets in code — GEMINI_API_KEY read from environment only
   - Static files served from a fixed, sandboxed directory
+  - Full security headers: CSP, HSTS, X-Frame-Options, Referrer-Policy
 """
 from __future__ import annotations
 
 import logging
+import math
+import time
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -44,7 +49,7 @@ settings = Settings()
 async def lifespan(app: FastAPI):
     """Lifespan event handler for FastAPI (replaces deprecated on_event)."""
     get_kb()
-    logger.info("✅ StadiumPulse v2.1 started — KB loaded, RAG engine ready.")
+    logger.info("✅ StadiumPulse v3.0 started — KB loaded, RAG engine ready.")
     if settings.gemini_api_key:
         logger.info("🤖 GEMINI_API_KEY detected — Live Gemini integration active.")
     else:
@@ -59,7 +64,7 @@ app = FastAPI(
         "FIFA World Cup 2026 venues. Responses are grounded in a synthetic "
         "venue knowledge base — no live FIFA data is used."
     ),
-    version="2.1.0",
+    version="3.0.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     lifespan=lifespan,
@@ -68,10 +73,23 @@ app = FastAPI(
 # Custom Security Headers Middleware
 @app.middleware("http")
 async def security_headers_middleware(request: Request, call_next):
+    """Attach production-grade security headers to every response."""
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
-    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "script-src 'self'; "
+        "style-src 'self' https://fonts.googleapis.com; "
+        "font-src https://fonts.gstatic.com; "
+        "connect-src 'self'; "
+        "img-src 'self' data:; "
+        "frame-ancestors 'none';"
+    )
     return response
 
 # CORS — controlled by environment variables (defaults to ["*"])
@@ -106,7 +124,7 @@ async def serve_index() -> FileResponse:
 async def health() -> HealthResponse:
     """Liveness + readiness check. Confirms KB is loaded."""
     kb = get_kb()
-    return HealthResponse(status="ok", kb_loaded=kb.loaded, version="2.0.0")
+    return HealthResponse(status="ok", kb_loaded=kb.loaded, version="3.0.0")
 
 
 # ─── Chat endpoint ────────────────────────────────────────────────────────────
@@ -144,23 +162,40 @@ async def chat(
     return ChatResponse(**result)
 
 
-@app.get("/api/density", tags=["system"], summary="Get synthetic gate wait times")
-async def get_density():
+@app.get("/api/density", tags=["system"], summary="Get synthetic gate crowd wait times")
+async def get_density() -> dict:
     """
-    Returns synthetic, pseudo-random wait times for stadium gates to simulate
-    real-time crowd surge monitoring.
+    Returns synthetic, smoothly-varying wait times (minutes) for all stadium gates.
+    Values oscillate on 10-minute cycles using time-seeded sinusoids to simulate
+    realistic crowd surge patterns without requiring external data sources.
     """
-    import time
-    import math
-    
-    # Use time as a seed to create dynamic but continuous wait times
-    t = time.time() / 600.0  # Slow changing (10 min cycles)
-    
+    t = time.time() / 600.0  # Slow-changing seed (10-min cycles)
     return {
         "A": max(2, int(15 + 10 * math.sin(t))),
-        "B": max(2, int(8 + 5 * math.sin(t + 1))),
-        "C": max(2, int(25 + 15 * math.sin(t + 2))),  # Gate C is usually busiest
-        "D": max(2, int(5 + 3 * math.sin(t + 3))),
-        "E": max(2, int(12 + 6 * math.sin(t + 4))),
-        "G": max(1, int(3 + 2 * math.sin(t + 5)))
+        "B": max(2, int(8  +  5 * math.sin(t + 1.0))),
+        "C": max(2, int(25 + 15 * math.sin(t + 2.0))),  # Historically busiest
+        "D": max(2, int(5  +  3 * math.sin(t + 3.0))),
+        "E": max(2, int(12 +  6 * math.sin(t + 4.0))),
+        "G": max(1, int(3  +  2 * math.sin(t + 5.0))),  # Accessible gate — always low
+    }
+
+
+@app.get("/api/match", tags=["system"], summary="Get synthetic live match state")
+async def get_match() -> dict:
+    """
+    Returns a synthetic live match state for the FIFA WC 2026 demo.
+    Simulates match progression based on wall-clock time relative to kickoff.
+    """
+    # Synthetic kickoff at a fixed offset from server start
+    elapsed_min = int((time.time() % 5400) / 60)  # 90-min cycle
+    in_play = elapsed_min < 90
+    return {
+        "home_team": "USA",
+        "away_team": "POR",
+        "home_score": min(3, elapsed_min // 30),
+        "away_score": min(2, elapsed_min // 45),
+        "minute": elapsed_min if in_play else 90,
+        "status": "LIVE" if in_play else "FT",
+        "venue": "MetLife Stadium",
+        "capacity": 82500,
     }
