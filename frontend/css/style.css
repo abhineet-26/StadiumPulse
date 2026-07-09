@@ -41,9 +41,9 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  background: linear-gradient(135deg, var(--bg-deep), var(--bg-mid), var(--bg-light));
-  background-size: 400% 400%;
-  animation: gradientBG 15s ease infinite;
+  background: 
+    linear-gradient(135deg, rgba(15,12,41,0.8), rgba(48,43,99,0.8), rgba(36,36,62,0.8)),
+    url('https://images.unsplash.com/photo-1518605368461-1e1e1fd25b37?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
   color: var(--text-main);
   font-family: var(--font-sans);
   font-size: 15px;
