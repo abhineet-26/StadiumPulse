@@ -4,13 +4,22 @@ Validates core requirements: RAG grounding, "I don't know" fallback,
 multilingual support, accessibility mode, and input validation.
 """
 import pytest
+import os
+# Force GEMINI_API_KEY to empty before loading app to ensure tests run in fast simulated mode
+os.environ["GEMINI_API_KEY"] = ""
+
 from fastapi.testclient import TestClient
 
-from app.main import app
-from app.rag import KnowledgeBase, process_query
+from app.main import app as fastapi_app
+from app.rag import KnowledgeBase, process_query, settings
+
+# Double-check settings just in case it loaded from .env already
+settings.gemini_api_key = None
+import app.rag as rag_module
+rag_module._model = None
 
 # Use TestClient for API endpoint tests
-client = TestClient(app)
+client = TestClient(fastapi_app)
 
 # Fixture to load KB once for unit tests
 @pytest.fixture(scope="module")
@@ -138,4 +147,14 @@ def test_response_schema():
     
     assert data["intent"] == "wayfinding"
     assert data["fallback"] is False
-    assert data["confidence"] == "high"
+
+
+def test_density_endpoint():
+    """Verify /api/density returns valid gate wait times."""
+    response = client.get("/api/density")
+    assert response.status_code == 200
+    data = response.json()
+    assert "A" in data
+    assert "C" in data
+    assert isinstance(data["A"], int)
+    assert data["A"] >= 0

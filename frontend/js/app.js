@@ -40,6 +40,31 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('cd-minutes').textContent = String(m).padStart(2, '0');
   }, 1000);
 
+  // Poll Gate Density
+  async function fetchDensity() {
+    try {
+      const res = await fetch('/api/density');
+      if (res.ok) {
+        const data = await res.json();
+        ['A', 'C', 'E', 'G'].forEach(gate => {
+          const el = document.getElementById(`wait-${gate}`);
+          if (el && data[gate] !== undefined) {
+            el.textContent = `${data[gate]}m`;
+            // Color code based on wait time
+            const rect = el.previousElementSibling;
+            if (data[gate] > 20) rect.setAttribute('fill', 'var(--warn)');
+            else if (data[gate] > 30) rect.setAttribute('fill', 'var(--crit)');
+            else rect.setAttribute('fill', 'var(--info)');
+          }
+        });
+      }
+    } catch (e) {
+      console.warn("Could not fetch density:", e);
+    }
+  }
+  fetchDensity();
+  setInterval(fetchDensity, 30000); // Poll every 30s
+
   // Toggles
   btnAccess.addEventListener('click', () => {
     accessibilityMode = !accessibilityMode;
@@ -138,6 +163,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
       meta.appendChild(badges);
       wrapper.appendChild(meta);
+      
+      // Add escalate button for fallback
+      if (metaData.fallback) {
+        const escalateBtn = document.createElement('button');
+        escalateBtn.className = 'escalate-btn';
+        escalateBtn.innerHTML = '🚨 Escalate to Staff';
+        escalateBtn.onclick = () => {
+          escalateBtn.disabled = true;
+          escalateBtn.innerHTML = '✅ Staff Notified';
+          escalateBtn.style.background = 'rgba(0, 245, 160, 0.1)';
+          escalateBtn.style.color = 'var(--safe)';
+          escalateBtn.style.borderColor = 'var(--safe)';
+          addSystemMessage("Ops Dashboard alerted. A volunteer has been dispatched to your location.");
+        };
+        wrapper.appendChild(escalateBtn);
+      }
     }
     
     return wrapper;

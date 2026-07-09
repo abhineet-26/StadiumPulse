@@ -21,16 +21,20 @@ the final template step.
 from __future__ import annotations
 
 import json
-import os
+import logging
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import google.generativeai as genai
 
-_API_KEY = os.getenv("GEMINI_API_KEY")
-if _API_KEY:
-    genai.configure(api_key=_API_KEY)
+from .models import Settings
+
+logger = logging.getLogger(__name__)
+settings = Settings()
+
+if settings.gemini_api_key:
+    genai.configure(api_key=settings.gemini_api_key)
     _model = genai.GenerativeModel("gemini-3.5-flash")
 else:
     _model = None
@@ -458,6 +462,7 @@ Instructions:
         try:
             text = _model.generate_content(prompt).text
         except Exception as e:
+            logger.error(f"LLM Error generating response: {e}")
             text = f"⚠️ LLM Error: {str(e)}"
     else:
         if ctype == "gate":

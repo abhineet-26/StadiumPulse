@@ -5,9 +5,25 @@ before any business logic runs.
 """
 from __future__ import annotations
 
-from typing import Literal, Optional
+from typing import List, Literal, Optional
 
 from pydantic import BaseModel, Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    """
+    Application configuration via environment variables.
+    pydantic-settings automatically reads from the environment and .env files.
+    """
+    gemini_api_key: Optional[str] = None
+    rate_limit_per_minute: int = Field(default=20)
+    allowed_origins: List[str] = Field(default=["*"])
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8"
+    )
 
 
 class ChatRequest(BaseModel):
@@ -23,6 +39,7 @@ class ChatRequest(BaseModel):
     message: str = Field(
         min_length=1,
         max_length=500,
+        json_schema_extra={"strip_whitespace": True},
         description="Fan's question in any supported language (max 500 chars)",
         examples=["Where is Gate C?", "Onde fica meu assento?"],
     )

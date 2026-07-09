@@ -208,6 +208,10 @@ body {
   fill: var(--text-main); font-size: 12px; font-weight: 600;
   text-anchor: middle; dominant-baseline: central;
 }
+.map-wait {
+  fill: #fff; font-size: 10px; font-weight: 700;
+  text-anchor: middle; dominant-baseline: central;
+}
 .map-overlay {
   position: absolute; top: 16px; left: 16px;
   background: rgba(10,14,26,0.8); backdrop-filter: blur(8px);
@@ -275,6 +279,24 @@ body {
 }
 .message.user .message-meta { align-items: flex-end; color: var(--text-muted); }
 .message.ai .message-meta { align-items: flex-start; }
+
+/* Action Buttons */
+.escalate-btn {
+  background: rgba(255, 74, 74, 0.1);
+  border: 1px solid var(--crit);
+  color: #FF7070;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+.escalate-btn:hover { background: rgba(255, 74, 74, 0.2); }
 
 /* Badges */
 .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }

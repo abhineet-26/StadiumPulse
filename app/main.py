@@ -16,19 +16,41 @@ Security practices implemented here:
 """
 from __future__ import annotations
 
-import os
+import logging
+from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from .limiter import check_rate_limit
-from .models import ChatRequest, ChatResponse, HealthResponse
+from .models import ChatRequest, ChatResponse, HealthResponse, Settings
 from .rag import KnowledgeBase, get_kb, process_query
 
+# Configure standard logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+logger = logging.getLogger(__name__)
+
+settings = Settings()
+
 # ─── App setup ────────────────────────────────────────────────────────────────
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan event handler for FastAPI (replaces deprecated on_event)."""
+    get_kb()
+    logger.info("✅ StadiumPulse v2.1 started — KB loaded, RAG engine ready.")
+    if settings.gemini_api_key:
+        logger.info("🤖 GEMINI_API_KEY detected — Live Gemini integration active.")
+    else:
+        logger.info("ℹ️ No GEMINI_API_KEY — running in fully-simulated RAG mode.")
+    yield
+    # Cleanup on shutdown could go here
 
 app = FastAPI(
     title="StadiumPulse Fan Assistant API",
@@ -37,16 +59,25 @@ app = FastAPI(
         "FIFA World Cup 2026 venues. Responses are grounded in a synthetic "
         "venue knowledge base — no live FIFA data is used."
     ),
-    version="2.0.0",
+    version="2.1.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
+    lifespan=lifespan,
 )
 
-# CORS — open for local demo; restrict to your domain in production
-# Production note: replace ["*"] with ["https://yourdomain.com"]
+# Custom Security Headers Middleware
+@app.middleware("http")
+async def security_headers_middleware(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return response
+
+# CORS — controlled by environment variables (defaults to ["*"])
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.allowed_origins,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
@@ -113,16 +144,23 @@ async def chat(
     return ChatResponse(**result)
 
 
-# ─── Startup ──────────────────────────────────────────────────────────────────
-
-@app.on_event("startup")
-async def startup_event() -> None:
-    """Pre-load KB at startup so first request isn't slow."""
-    get_kb()
-    print("✅ StadiumPulse v2.0 started — KB loaded, RAG engine ready.")
-    # LLM_STUB: if GEMINI_API_KEY is set, initialize Gemini client here
-    api_key = os.getenv("GEMINI_API_KEY")
-    if api_key:
-        print("🤖 GEMINI_API_KEY detected — LLM integration stub ready (not active in this build).")
-    else:
-        print("ℹ️  No GEMINI_API_KEY — running in fully-simulated RAG mode.")
+@app.get("/api/density", tags=["system"], summary="Get synthetic gate wait times")
+async def get_density():
+    """
+    Returns synthetic, pseudo-random wait times for stadium gates to simulate
+    real-time crowd surge monitoring.
+    """
+    import time
+    import math
+    
+    # Use time as a seed to create dynamic but continuous wait times
+    t = time.time() / 600.0  # Slow changing (10 min cycles)
+    
+    return {
+        "A": max(2, int(15 + 10 * math.sin(t))),
+        "B": max(2, int(8 + 5 * math.sin(t + 1))),
+        "C": max(2, int(25 + 15 * math.sin(t + 2))),  # Gate C is usually busiest
+        "D": max(2, int(5 + 3 * math.sin(t + 3))),
+        "E": max(2, int(12 + 6 * math.sin(t + 4))),
+        "G": max(1, int(3 + 2 * math.sin(t + 5)))
+    }

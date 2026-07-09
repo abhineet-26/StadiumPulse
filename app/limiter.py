@@ -10,15 +10,18 @@ Production note (documented, not built for MVP):
 """
 from __future__ import annotations
 
-import os
 import time
 from collections import defaultdict
 from typing import Dict, List
 
 from fastapi import HTTPException, Request
 
+from .models import Settings
+
+settings = Settings()
+
 # Configurable via environment variable; default 20 req/min
-_LIMIT: int = int(os.getenv("RATE_LIMIT_PER_MINUTE", "20"))
+_LIMIT: int = settings.rate_limit_per_minute
 _WINDOW: int = 60  # seconds
 
 # { client_ip: [timestamp, timestamp, ...] }
