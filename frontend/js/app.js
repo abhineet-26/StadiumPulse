@@ -330,4 +330,33 @@ document.addEventListener('DOMContentLoaded', () => {
       chatMessages.appendChild(createMessageEl('ai', welcomes[langSelect.value]));
     }
   });
+
+  // --- Staff Copilot Actions ---
+  const btnTranslate = document.getElementById('btn-action-translate');
+  const btnPolicy = document.getElementById('btn-action-policy');
+  const btnMedical = document.getElementById('btn-action-medical');
+
+  if (btnTranslate) {
+    btnTranslate.addEventListener('click', () => {
+      chatInput.value = 'Translate: Where are the bathrooms? (to Spanish)';
+      document.getElementById('tab-fan').click();
+      sendMessage();
+    });
+  }
+
+  if (btnPolicy) {
+    btnPolicy.addEventListener('click', () => {
+      chatInput.value = 'What is the bag policy for backpacks?';
+      document.getElementById('tab-fan').click();
+      sendMessage();
+    });
+  }
+
+  if (btnMedical) {
+    btnMedical.addEventListener('click', () => {
+      btnMedical.innerHTML = '<span class="action-icon">✅</span><h3>Dispatched</h3><p>EMS is en route</p>';
+      btnMedical.style.background = 'rgba(255, 74, 74, 0.2)';
+      alert('Medical incident reported to Command Center. EMS dispatched to your zone.');
+    });
+  }
 });

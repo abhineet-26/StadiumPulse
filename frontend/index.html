@@ -169,17 +169,17 @@
             <p class="section-subtitle">Common volunteer tasks</p>
             
             <div class="action-grid">
-              <button class="action-card" onclick="document.getElementById('chat-input').value='Translate: Where are the bathrooms? (to Spanish)'; document.getElementById('btn-send').click(); document.getElementById('tab-fan').click();">
+              <button class="action-card" id="btn-action-translate">
                 <span class="action-icon">🗣️</span>
                 <h3>Translate</h3>
                 <p>Request translations for fans</p>
               </button>
-              <button class="action-card" onclick="document.getElementById('chat-input').value='What is the bag policy for backpacks?'; document.getElementById('btn-send').click(); document.getElementById('tab-fan').click();">
+              <button class="action-card" id="btn-action-policy">
                 <span class="action-icon">🎒</span>
                 <h3>Check Policy</h3>
                 <p>Lookup stadium rules instantly</p>
               </button>
-              <button class="action-card critical" onclick="alert('Medical incident reported to Command Center. Security dispatched to your zone.');">
+              <button class="action-card critical" id="btn-action-medical">
                 <span class="action-icon">🚑</span>
                 <h3>Medical Alert</h3>
                 <p>Dispatch EMS to your zone</p>

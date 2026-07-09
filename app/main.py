@@ -87,7 +87,7 @@ async def security_headers_middleware(request: Request, call_next):
         "style-src 'self' https://fonts.googleapis.com; "
         "font-src https://fonts.gstatic.com; "
         "connect-src 'self'; "
-        "img-src 'self' data:; "
+        "img-src 'self' data: https://images.unsplash.com; "
         "frame-ancestors 'none';"
     )
     return response
